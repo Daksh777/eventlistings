@@ -74,4 +74,7 @@ class EventIndexPage(Page):
         context = super().get_context(request)
         event_pages = self.get_children().live().type(EventPage).order_by('eventpage__date')
         context['event_pages'] = event_pages
+        tags_queryset = EventPage.objects.live().values_list('tags', flat=True)
+        all_tags = [tag.strip() for tags_string in tags_queryset for tag in tags_string.split(',') if tag.strip()]
+        context['tags_list'] = sorted(set(all_tags))
         return context
