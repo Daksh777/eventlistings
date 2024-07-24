@@ -6,33 +6,44 @@
 {% block title %}Search{% endblock %}
 
 {% block content %}
-<h1>Search</h1>
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-4">Search Results</h1>
 
-<form action="{% url 'search' %}" method="get">
-    <input type="text" name="query"{% if search_query %} value="{{ search_query }}"{% endif %}>
-    <input type="submit" value="Search" class="button">
-</form>
+    <form action="{% url 'search' %}" method="get" class="flex items-center mb-4">
+        <input type="text" name="query" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500" placeholder="Search..." value="{{ search_query }}">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ml-2">Search</button>
+    </form>
 
-{% if search_results %}
-<ul>
-    {% for result in search_results %}
-    <li>
-        <h4><a href="{% pageurl result %}">{{ result }}</a></h4>
-        {% if result.search_description %}
-        {{ result.search_description }}
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
+    {% if search_results %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for result in search_results %}
+            <div class="card transform hover:scale-105 transition duration-300">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold mb-2">{{ result.title }}</h2>
+                    <p class="text-gray-600 mb-2">{{ result.specific.date|date:"F d, Y" }}</p>
+                    <p class="text-gray-600 mb-2">{{ result.specific.start_time|time:"g:i A" }} - {{ result.specific.end_time|time:"g:i A" }}</p>
+                    <p class="text-gray-600 mb-4">{{ result.specific.venue }}</p>
+                    <div class="mb-4">
+                        {% for tag in result.tags_list %}
+                        <span class="inline-block bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    <a href="{% pageurl result %}" class="btn">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 
-{% if search_results.has_previous %}
-<a href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.previous_page_number }}">Previous</a>
-{% endif %}
-
-{% if search_results.has_next %}
-<a href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.next_page_number }}">Next</a>
-{% endif %}
-{% elif search_query %}
-No results found
-{% endif %}
+        <div class="flex justify-center mt-4">
+            {% if search_results.has_previous %}
+            <a href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.previous_page_number }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Previous</a>
+            {% endif %}
+            {% if search_results.has_next %}
+            <a href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.next_page_number }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 ml-2">Next</a>
+            {% endif %}
+        </div>
+    {% elif search_query %}
+        <p class="text-center text-gray-500">No results found for "{{ search_query }}"</p>
+    {% endif %}
+</div>
 {% endblock %}

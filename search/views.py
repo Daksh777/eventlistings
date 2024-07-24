@@ -2,6 +2,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.template.response import TemplateResponse
 
 from wagtail.models import Page
+from home.models import EventPage
 
 # To enable logging of search queries for use with the "Promoted search results" module
 # <https://docs.wagtail.org/en/stable/reference/contrib/searchpromotions.html>
@@ -17,7 +18,9 @@ def search(request):
 
     # Search
     if search_query:
-        search_results = Page.objects.live().search(search_query)
+        search_results = EventPage.objects.live().search(search_query)
+        for result in search_results:
+            result.tags_list = [tag.strip() for tag in result.tags.split(",") if tag.strip()]
 
         # To log this query for use with the "Promoted search results" module:
 
