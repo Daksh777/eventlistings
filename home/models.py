@@ -12,7 +12,7 @@ class HomePage(Page):
     ]
     def get_context(self, request):
         context = super().get_context(request)
-        context['latest_events'] = EventPage.objects.live().order_by('-first_published_at')[:3]
+        context['latest_events'] = EventPage.objects.live().order_by('-first_published_at')[:6]
         return context
 
 class EventPage(Page):
@@ -20,26 +20,48 @@ class EventPage(Page):
     start_time = models.TimeField("Start time")
     end_time = models.TimeField("End time")
     venue = models.CharField(max_length=255)
-    description = RichTextField(blank=True)
-    organizer = models.CharField(max_length=255)
+    description = RichTextField()
+    header_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     tags = models.CharField(max_length=255, help_text="Comma-separated list of tags")
+    registration_required = models.BooleanField(default=False)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    capacity = models.IntegerField(null=True, blank=True)
+    registration_url = models.URLField(blank=True)
 
     search_fields = Page.search_fields + [
         index.SearchField('description'),
         index.SearchField('tags'),
+        index.FilterField('date'),
     ]
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([
+            FieldPanel('header_image'),
             FieldPanel('date'),
             FieldPanel('start_time'),
             FieldPanel('end_time'),
-        ], heading="Event Date and Time"),
-        FieldPanel('venue'),
+            FieldPanel('venue'),
+        ], heading="Event Details"),
         FieldPanel('description'),
-        FieldPanel('organizer'),
         FieldPanel('tags'),
+        MultiFieldPanel([
+            FieldPanel('registration_required'),
+            FieldPanel('price'),
+            FieldPanel('capacity'),
+            FieldPanel('registration_url'),
+        ], heading="Registration Information"),
     ]
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['tags_list'] = [tag.strip() for tag in self.tags.split(',') if tag.strip()]
+        return context
 
 class EventIndexPage(Page):
     intro = RichTextField(blank=True)
@@ -50,6 +72,6 @@ class EventIndexPage(Page):
 
     def get_context(self, request):
         context = super().get_context(request)
-        event_pages = self.get_children().live().order_by('eventpage__date')
+        event_pages = self.get_children().live().type(EventPage).order_by('eventpage__date')
         context['event_pages'] = event_pages
         return context
