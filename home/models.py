@@ -10,6 +10,10 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel('body', classname="full"),
     ]
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['latest_events'] = EventPage.objects.live().order_by('-first_published_at')[:3]
+        return context
 
 class EventPage(Page):
     date = models.DateField("Event date")

@@ -1,4 +1,4 @@
-{% load static wagtailcore_tags wagtailuserbar %}
+{% comment %} {% load static wagtailcore_tags wagtailuserbar %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,4 +43,46 @@
         {# Override this in templates to add extra javascript #}
         {% endblock %}
     </body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Delhi Tech Events{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .btn {
+                @apply bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-md overflow-hidden;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-full">
+    <nav class="bg-blue-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-white text-2xl font-bold">Delhi Tech Events</a>
+            <ul class="flex space-x-4">
+                <li><a href="/" class="text-white hover:text-gray-200">Home</a></li>
+                <li><a href="/events/" class="text-white hover:text-gray-200">All Events</a></li>
+                <li><a href="/about/" class="text-white hover:text-gray-200">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-8 px-4 flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-200 p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Delhi Tech Events. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
 </html>

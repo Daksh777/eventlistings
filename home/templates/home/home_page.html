@@ -1,15 +1,23 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags %}
 
-{% block body_class %}template-homepage{% endblock %}
-
 {% block content %}
-    <h1>{{ page.title }}</h1>
-    {{ page.body|richtext }}
+<h1 class="text-4xl font-bold mb-8">Welcome to Delhi Tech Events</h1>
 
-    <h2>Upcoming Events</h2>
-    {% for event in page.get_children.specific %}
-        <h3><a href="{% pageurl event %}">{{ event.title }}</a></h3>
-        <p>Date: {{ event.date }}</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    {% for event in latest_events %}
+    <div class="card">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-2">{{ event.title }}</h2>
+            <p class="text-gray-600 mb-2">{{ event.specific.date|date:"F d, Y" }}</p>
+            <p class="text-gray-600 mb-4">{{ event.specific.venue }}</p>
+            <a href="{% pageurl event %}" class="btn">Learn More</a>
+        </div>
+    </div>
     {% endfor %}
+</div>
+
+<div class="text-center">
+    <a href="/events/" class="bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-green-600 transition duration-300">View All Events</a>
+</div>
 {% endblock %}
