@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block body_class %}template-eventpage{% endblock %}
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+    <p>Date: {{ page.date }}</p>
+    <p>Time: {{ page.start_time }} - {{ page.end_time }}</p>
+    <p>Venue: {{ page.venue }}</p>
+    <p>Organizer: {{ page.organizer }}</p>
+    <div>{{ page.description|richtext }}</div>
+    <p>Tags: {{ page.tags }}</p>
+{% endblock %}

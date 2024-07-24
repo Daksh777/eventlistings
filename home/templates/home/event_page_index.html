@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-eventindexpage{% endblock %}
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+    <div>{{ page.intro|richtext }}</div>
+
+    {% for event in event_pages %}
+        <h2><a href="{% pageurl event %}">{{ event.title }}</a></h2>
+        <p>Date: {{ event.specific.date }}</p>
+        <p>Venue: {{ event.specific.venue }}</p>
+    {% endfor %}
+{% endblock %}
