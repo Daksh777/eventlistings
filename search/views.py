@@ -19,8 +19,6 @@ def search(request):
     # Search
     if search_query:
         search_results = EventPage.objects.live().search(search_query)
-        for result in search_results:
-            result.tags_list = [tag.strip() for tag in result.tags.split(",") if tag.strip()]
 
         # To log this query for use with the "Promoted search results" module:
 

@@ -3,6 +3,10 @@ from wagtail.models import Page
 from wagtail.fields import RichTextField
 from wagtail.search import index
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from taggit.managers import TaggableManager
+from modelcluster.fields import ParentalKey
+from modelcluster.tags import ClusterTaggableManager
+from taggit.models import TaggedItemBase
 
 class HomePage(Page):
     body = RichTextField(blank=True)
@@ -14,6 +18,13 @@ class HomePage(Page):
         context = super().get_context(request)
         context['latest_events'] = EventPage.objects.live().order_by('-first_published_at')[:6]
         return context
+
+class EventPageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'EventPage',
+        related_name='tagged_items',
+        on_delete=models.CASCADE
+    )
 
 class EventPage(Page):
     date = models.DateField("Event date")
@@ -28,7 +39,7 @@ class EventPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    tags = models.CharField(max_length=255, help_text="Comma-separated list of tags")
+    tags = ClusterTaggableManager(through=EventPageTag, blank=False)
     registration_required = models.BooleanField(default=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     capacity = models.IntegerField(null=True, blank=True)
@@ -60,7 +71,6 @@ class EventPage(Page):
 
     def get_context(self, request):
         context = super().get_context(request)
-        context['tags_list'] = [tag.strip() for tag in self.tags.split(',') if tag.strip()]
         return context
 
 class EventIndexPage(Page):
@@ -74,7 +84,4 @@ class EventIndexPage(Page):
         context = super().get_context(request)
         event_pages = self.get_children().live().type(EventPage).order_by('eventpage__date')
         context['event_pages'] = event_pages
-        tags_queryset = EventPage.objects.live().values_list('tags', flat=True)
-        all_tags = [tag.strip() for tags_string in tags_queryset for tag in tags_string.split(',') if tag.strip()]
-        context['tags_list'] = sorted(set(all_tags))
         return context

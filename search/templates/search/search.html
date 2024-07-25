@@ -24,7 +24,7 @@
                     <p class="text-gray-600 mb-2">{{ result.specific.start_time|time:"g:i A" }} - {{ result.specific.end_time|time:"g:i A" }}</p>
                     <p class="text-gray-600 mb-4">{{ result.specific.venue }}</p>
                     <div class="mb-4">
-                        {% for tag in result.tags_list %}
+                        {% for tag in result.specific.tags.all %}
                         <span class="inline-block bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">{{ tag }}</span>
                         {% endfor %}
                     </div>
